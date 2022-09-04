@@ -79,6 +79,7 @@
        var group= document.querySelector('#chart-content');
        group.innerHTML="";
         var pasAlpha=(Math.PI)/elements.length;
+        var rotateText=elements.length>6?true:false;
         elements.map((element,i) => {
             var newg=document.createElementNS('http://www.w3.org/2000/svg','g');
                 var xcos=Math.cos(Math.PI/4)
@@ -98,14 +99,23 @@
                 newg.append(line);
             }
             xcos=Math.cos(pasAlpha*(i)+(0.5*pasAlpha))
-                 ysin=Math.sin(pasAlpha*(i)+(0.5*pasAlpha))
+            ysin=Math.sin(pasAlpha*(i)+(0.5*pasAlpha))
             var text=document.createElementNS('http://www.w3.org/2000/svg','text');
             text.setAttribute('text-anchor','middle');
-                text.setAttribute('font-size','40');
-
+            text.setAttribute('font-size','40');
+            text.innerHTML=element;
+            if(rotateText)
+            {
+                text.setAttribute('x',260);
+                text.setAttribute('y',-2);
+                text.setAttribute('transform','rotate(-'+((pasAlpha*i+(0.5*pasAlpha))*180/Math.PI)+',0, 0)');
+            }
+            else{
                 text.setAttribute('x',xcos*330);
                 text.setAttribute('y',-ysin*330);
-                text.innerHTML=element;
+            
+            }
+
                 newg.append(text);
 
                 group.append(newg);
