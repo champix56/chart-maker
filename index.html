@@ -27,8 +27,11 @@
       #liste-container {
         width: auto;
       }
+      ul{display: flex;    list-style-type:none;overflow-x: auto;width:85%;
+}
       li {
-        text-align: left;
+        padding-left:10px;
+        text-align: center;
         margin-left: auto;
         margin-right: auto;
       }
@@ -60,7 +63,7 @@
         console.log("add->" + value);
         elements.push(value);
         var ligne=document.createElement('tr');
-        ligne.innerHTML='<td>'+value+'</td><td><button type="button">X</button></td>';
+        ligne.innerHTML='<li>'+value+'<button type="button">X</button></li>';
         ligne.querySelector('button').addEventListener('click',(evt)=>{
             for( var i = 0; i < elements.length; i++){ 
                 if ( elements[i] === value) { 
@@ -88,7 +91,7 @@
             if(i>0){
                  xcos=Math.cos(pasAlpha*(i))
                  ysin=Math.sin(pasAlpha*(i))
-                 newg.id="content-"+i;
+                 newg.id="content-"+i.toString();
                 var line=document.createElementNS('http://www.w3.org/2000/svg','line');
                 line.setAttribute('x1',0);
                 line.setAttribute('y1',0);
@@ -140,11 +143,11 @@
           >
             add
           </button>
-          <!-- <div style="text-align: center">
-            <div id="liste-container"> -->
-          <table id="liste-elements" align="center"/></table>
-          <!-- </div>
-          </div> -->
+          <div style="text-align: center">
+           <!--  <div id="liste-container"> -->
+          <ul id="liste-elements" align="center"/></ul>
+           </div>
+          <!--</div> -->
           <hr />
           <input type="submit" value="imprimer" id="print-button" />
           <input type="reset" value="clear" id="clear-button" />
