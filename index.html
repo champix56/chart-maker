@@ -1,12 +1,183 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
-    
-</body>
+    <style>
+      .v-container {
+        display: flex;
+        height: 98vh;
+        vertical-align: middle;
+      }
+      .v-container > div:nth-child(1) {
+        text-align: center;
+        padding: 10px;
+        width: 33%;
+        border: 1px solid black;
+      }
+      .v-container > div:nth-child(2) {
+        flex-grow: 1;
+      }
+      .v-container > div {
+        vertical-align: middle;
+        height: 100%;
+      }
+      #liste-container {
+        width: auto;
+      }
+      li {
+        text-align: left;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    </style>
+    <script>
+        var elements=[];
+      function loadEvents() {
+        document.querySelector("form").addEventListener("submit", (evt) => {
+          evt.preventDefault();
+        });
+        document.querySelector("#addValue").addEventListener("click", (evt) => {
+          addElement(document.querySelector("#elementValue").value);
+        }); 
+        document.querySelector("#print-button").addEventListener("click", (evt) => {
+            var tab = window.open('about:blank', '_blank');
+            tab.document.write('<style type="text/css" media="print">@page { size: landscape; }</style>'+document.querySelector('svg').outerHTML); // where 'html' is a variable containing your HTML
+            tab.window.print(); // to finish loading the page
+        });
+        document.querySelector("#clear-button").addEventListener("click", (evt) => {
+          document.querySelector("#liste-elements").innerHTML="";
+          elements=[];
+          redraw();
+        });
+        document.querySelector("#title").addEventListener("input", (evt) => {
+          document.querySelector("#chart-name").innerHTML=evt.target.value;
+        });
+      }
+      function addElement(value) {
+        console.log("add->" + value);
+        elements.push(value);
+        var ligne=document.createElement('tr');
+        ligne.innerHTML='<td>'+value+'</td><td><button type="button">X</button></td>';
+        ligne.querySelector('button').addEventListener('click',(evt)=>{
+            for( var i = 0; i < elements.length; i++){ 
+                if ( elements[i] === value) { 
+                    elements.splice(i, 1); 
+                }
+            }
+            evt.target.parentElement.parentElement.remove();
+            redraw();
+        console.log(elements);
+        })
+        document.querySelector('#liste-elements').append(ligne);
+
+        redraw();
+      }
+      function redraw() {
+       var group= document.querySelector('#chart-content');
+       group.innerHTML="";
+        var pasAlpha=(Math.PI)/elements.length;
+        elements.map((element,i) => {
+            var newg=document.createElementNS('http://www.w3.org/2000/svg','g');
+                var xcos=Math.cos(Math.PI/4)
+                var ysin=Math.sin(Math.PI/4)
+             
+            if(i>0){
+                 xcos=Math.cos(pasAlpha*(i))
+                 ysin=Math.sin(pasAlpha*(i))
+                 newg.id="content-"+i;
+                var line=document.createElementNS('http://www.w3.org/2000/svg','line');
+                line.setAttribute('x1',0);
+                line.setAttribute('y1',0);
+                line.setAttribute('x2',xcos*500);
+                line.setAttribute('y2',-ysin*500);
+                line.setAttribute('stroke-width',2);
+                line.setAttribute('stroke','black')
+                newg.append(line);
+            }
+            xcos=Math.cos(pasAlpha*(i)+(0.5*pasAlpha))
+                 ysin=Math.sin(pasAlpha*(i)+(0.5*pasAlpha))
+            var text=document.createElementNS('http://www.w3.org/2000/svg','text');
+            text.setAttribute('text-anchor','middle');
+                text.setAttribute('font-size','40');
+
+                text.setAttribute('x',xcos*330);
+                text.setAttribute('y',-ysin*330);
+                text.innerHTML=element;
+                newg.append(text);
+
+                group.append(newg);
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <h1 style="text-align: center">Chart editor</h1>
+    <hr />
+    <div class="v-container">
+      <div>
+        <form>
+          <label for="title"><h3>Titre</h3></label><br />
+          <input type="text" name="title" id="title"  />
+          <hr />
+          <label for="elements"><h3>elements</h3></label><br />
+          <input type="text" id="elementValue" name="elementValue" /><button
+            type="button"
+            name="addValue"
+            id="addValue"
+          >
+            add
+          </button>
+          <!-- <div style="text-align: center">
+            <div id="liste-container"> -->
+          <table id="liste-elements" align="center"/></table>
+          <!-- </div>
+          </div> -->
+          <hr />
+          <input type="submit" value="imprimer" id="print-button" />
+          <input type="reset" value="clear" id="clear-button" />
+        </form>
+      </div>
+      <div>
+        <svg
+          viewBox="-510 -510 1020 540"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+        >
+          <circle
+            cx="0"
+            cy="0"
+            r="500"
+            style="stroke: black; stroke-width: 2; fill: white"
+          />
+          <line
+            x1="-500"
+            y1="0"
+            x2="500"
+            y2="0"
+            stroke="black"
+            stroke-width="2"
+          />
+          <circle cx="0" cy="0" r="30" style="fill: black" />
+          <rect
+            x="-510"
+            y="0"
+            width="1020"
+            height="60"
+            style="stroke: none; fill: white"
+          />
+          <text x="0" text-anchor="middle"  y="20" style="stroke:black;font-size:25" id="chart-name"></text>
+          <g id="chart-content">
+              
+          </g>
+        </svg>
+      </div>
+    </div>
+    <script>
+      loadEvents();
+    </script>
+  </body>
 </html>
