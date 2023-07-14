@@ -1,0 +1,29 @@
+.v-container {
+    display: flex;
+    height: 98vh;
+    vertical-align: middle;
+  }
+  .v-container > div:nth-child(1) {
+    text-align: center;
+    padding: 10px;
+    width: 33%;
+    border: 1px solid black;
+  }
+  .v-container > div:nth-child(2) {
+    flex-grow: 1;
+  }
+  .v-container > div {
+    vertical-align: middle;
+    height: 100%;
+  }
+  #liste-container {
+    width: auto;
+  }
+  ul{display: flex;    list-style-type:none;overflow-x: auto;width:85%;
+}
+  li {
+    padding-left:10px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }

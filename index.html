@@ -6,122 +6,174 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>radhiesthesie charte maker</title>
     <style>
+      body {
+        height: 97vh;
+      }
       .v-container {
         display: flex;
-        height: 98vh;
-        vertical-align: middle;
       }
-      .v-container > div:nth-child(1) {
+      .v-container > * {
+        height: calc(97vh - 80px);
+      }
+      .v-container > *:nth-child(1) * {
+        max-width: calc(100% - 15px);
+      }
+      .v-container > *:nth-child(1) {
+        width: 160px;
         text-align: center;
-        padding: 10px;
-        width: 33%;
-        border: 1px solid black;
       }
-      .v-container > div:nth-child(2) {
-        flex-grow: 1;
-      }
-      .v-container > div {
-        vertical-align: middle;
+      .v-container > *:nth-child(2) > svg {
         height: 100%;
       }
-      #liste-container {
-        width: auto;
-      }
-      ul{display: flex;    list-style-type:none;overflow-x: auto;width:85%;
-}
-      li {
-        padding-left:10px;
+      .v-container > *:nth-child(2) {
+        flex-grow: 1;
         text-align: center;
-        margin-left: auto;
-        margin-right: auto;
+      }
+      form {
+        max-height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      form ul li {
+        border: 1px solid black;
+        padding: 3px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+      }
+      form ul li * {
+        display: flex;
+        align-content: space-evenly;
+      }
+      form ul {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0;
+        align-content: space-evenly;
       }
     </style>
+    <!-- <link rel="stylesheet" href="./index.css"> -->
+    <!-- <script src="./index.js"></script> -->
     <script>
-        var elements=[];
+      var elements = [];
+      document.addEventListener("DOMContentLoaded", () => {
+        loadEvents();
+      });
       function loadEvents() {
         document.querySelector("form").addEventListener("submit", (evt) => {
           evt.preventDefault();
         });
         document.querySelector("#addValue").addEventListener("click", (evt) => {
           addElement(document.querySelector("#elementValue").value);
-        }); 
-        document.querySelector("#print-button").addEventListener("click", (evt) => {
-            var tab = window.open('about:blank', '_blank');
-            tab.document.write('<style type="text/css" media="print">@page { size: landscape; }</style>'+document.querySelector('svg').outerHTML); // where 'html' is a variable containing your HTML
+        });
+        document
+          .querySelector("#print-button")
+          .addEventListener("click", (evt) => {
+            var tab = window.open("about:blank", "_blank");
+            tab.document.write(
+              '<style type="text/css" media="print">@page { size: landscape; }</style>' +
+                document.querySelector("svg").outerHTML
+            ); // where 'html' is a variable containing your HTML
             tab.window.print(); // to finish loading the page
-        });
-        document.querySelector("#clear-button").addEventListener("click", (evt) => {
-          document.querySelector("#liste-elements").innerHTML="";
-          elements=[];
-          redraw();
-        });
+          });
+        document
+          .querySelector("#clear-button")
+          .addEventListener("click", (evt) => {
+            document.querySelector("#liste-elements").innerHTML = "";
+            elements = [];
+            redraw();
+          });
         document.querySelector("#title").addEventListener("input", (evt) => {
-          document.querySelector("#chart-name").innerHTML=evt.target.value;
+          document.querySelector("#chart-name").innerHTML = evt.target.value;
         });
       }
+      /**
+       * add section in half circle
+       * @param {string} value text value
+       */
       function addElement(value) {
         console.log("add->" + value);
         elements.push(value);
-        var ligne=document.createElement('tr');
-        ligne.innerHTML='<li>'+value+'<button type="button">X</button></li>';
-        ligne.querySelector('button').addEventListener('click',(evt)=>{
-            for( var i = 0; i < elements.length; i++){ 
-                if ( elements[i] === value) { 
-                    elements.splice(i, 1); 
-                }
+        var ligne = document.createElement("tr");
+        ligne.innerHTML =
+          "<li>" + value + '<button type="button">X</button></li>';
+        ligne.querySelector("button").addEventListener("click", (evt) => {
+          for (var i = 0; i < elements.length; i++) {
+            if (elements[i] === value) {
+              elements.splice(i, 1);
             }
-            evt.target.parentElement.parentElement.remove();
-            redraw();
-        console.log(elements);
-        })
-        document.querySelector('#liste-elements').append(ligne);
+          }
+          evt.target.parentElement.parentElement.remove();
+          redraw();
+          console.log(elements);
+        });
+        document.querySelector("#liste-elements").append(ligne);
 
         redraw();
       }
+      /**
+       * draw datas
+       */
       function redraw() {
-       var group= document.querySelector('#chart-content');
-       group.innerHTML="";
-        var pasAlpha=(Math.PI)/elements.length;
-        var rotateText=elements.length>6?true:false;
-        elements.map((element,i) => {
-            var newg=document.createElementNS('http://www.w3.org/2000/svg','g');
-                var xcos=Math.cos(Math.PI/4)
-                var ysin=Math.sin(Math.PI/4)
-             
-            if(i>0){
-                 xcos=Math.cos(pasAlpha*(i))
-                 ysin=Math.sin(pasAlpha*(i))
-                 newg.id="content-"+i.toString();
-                var line=document.createElementNS('http://www.w3.org/2000/svg','line');
-                line.setAttribute('x1',0);
-                line.setAttribute('y1',0);
-                line.setAttribute('x2',xcos*500);
-                line.setAttribute('y2',-ysin*500);
-                line.setAttribute('stroke-width',2);
-                line.setAttribute('stroke','black')
-                newg.append(line);
-            }
-            xcos=Math.cos(pasAlpha*(i)+(0.5*pasAlpha))
-            ysin=Math.sin(pasAlpha*(i)+(0.5*pasAlpha))
-            var text=document.createElementNS('http://www.w3.org/2000/svg','text');
-            text.setAttribute('text-anchor','middle');
-            text.setAttribute('font-size','40');
-            text.innerHTML=element;
-            if(rotateText)
-            {
-                text.setAttribute('x',260);
-                text.setAttribute('y',-2);
-                text.setAttribute('transform','rotate(-'+((pasAlpha*i+(0.5*pasAlpha))*180/Math.PI)+',0, 0)');
-            }
-            else{
-                text.setAttribute('x',xcos*330);
-                text.setAttribute('y',-ysin*330);
-            
-            }
+        var group = document.querySelector("#chart-content");
+        group.innerHTML = "";
+        var pasAlpha = Math.PI / elements.length;
+        var rotateText = elements.length > 6 ? true : false;
+        var fontSize = 40;
+        elements.map((element, i) => {
+          var newg = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "g"
+          );
+          var xcos = Math.cos(Math.PI / 4);
+          var ysin = Math.sin(Math.PI / 4);
 
-                newg.append(text);
+          if (i > 0) {
+            xcos = Math.cos(pasAlpha * i);
+            ysin = Math.sin(pasAlpha * i);
+            newg.id = "content-" + i.toString();
+            var line = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "line"
+            );
+            line.setAttribute("x1", 0);
+            line.setAttribute("y1", 0);
+            line.setAttribute("x2", xcos * 500);
+            line.setAttribute("y2", -ysin * 500);
+            line.setAttribute("stroke-width", 2);
+            line.setAttribute("stroke", "black");
+            newg.append(line);
+          }
+          xcos = Math.cos(pasAlpha * i + 0.5 * pasAlpha);
+          ysin = Math.sin(pasAlpha * i + 0.5 * pasAlpha);
+          var text = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text"
+          );
+          text.setAttribute("text-anchor", "middle");
+          if (elements.length > 10) {
+            text.setAttribute("font-size", (40 - elements.length).toString());
+          } else {
+            text.setAttribute("font-size", "40");
+          }
+          text.innerHTML = element;
+          if (rotateText) {
+            text.setAttribute("x", 260);
+            text.setAttribute("y", -2);
+            text.setAttribute(
+              "transform",
+              "rotate(-" +
+                ((pasAlpha * i + 0.25 * pasAlpha) * 180) / Math.PI +
+                ",0, 0)"
+            );
+          } else {
+            text.setAttribute("x", xcos * 330);
+            text.setAttribute("y", -ysin * 330);
+          }
 
-                group.append(newg);
+          newg.append(text);
+
+          group.append(newg);
         });
       }
     </script>
@@ -133,7 +185,7 @@
       <div>
         <form>
           <label for="title"><h3>Titre</h3></label><br />
-          <input type="text" name="title" id="title"  />
+          <input type="text" name="title" id="title" />
           <hr />
           <label for="elements"><h3>elements</h3></label><br />
           <input type="text" id="elementValue" name="elementValue" /><button
@@ -144,12 +196,12 @@
             add
           </button>
           <div style="text-align: center">
-           <!--  <div id="liste-container"> -->
-          <ul id="liste-elements" align="center"/></ul>
-           </div>
+            <!--  <div id="liste-container"> -->
+            <ul id="liste-elements"></ul>
+          </div>
           <!--</div> -->
           <hr />
-          <input type="submit" value="imprimer" id="print-button" />
+          <input type="button" value="imprimer" id="print-button" />
           <input type="reset" value="clear" id="clear-button" />
         </form>
       </div>
@@ -182,15 +234,16 @@
             height="60"
             style="stroke: none; fill: white"
           />
-          <text x="0" text-anchor="middle"  y="20" style="stroke:black;font-size:25" id="chart-name"></text>
-          <g id="chart-content">
-              
-          </g>
+          <text
+            x="0"
+            text-anchor="middle"
+            y="20"
+            style="stroke: black; font-size: 25"
+            id="chart-name"
+          ></text>
+          <g id="chart-content"></g>
         </svg>
       </div>
     </div>
-    <script>
-      loadEvents();
-    </script>
   </body>
 </html>
