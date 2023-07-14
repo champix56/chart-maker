@@ -1,4 +1,5 @@
 var elements = [];
+var isElementsSeparate = false;
 document.addEventListener("DOMContentLoaded", () => {
   loadEvents();
 });
@@ -8,6 +9,10 @@ function loadEvents() {
   });
   document.querySelector("#addValue").addEventListener("click", (evt) => {
     addElement(document.querySelector("#elementValue").value);
+  });
+  document.querySelector("#separator").addEventListener("click", (evt) => {
+    isElementsSeparate = evt.target.checked;
+    redraw();
   });
   document.querySelector("#print-button").addEventListener("click", (evt) => {
     var tab = window.open("about:blank", "_blank");
@@ -28,7 +33,7 @@ function loadEvents() {
 }
 /**
  * add section in half circle
- * @param {string} value text value 
+ * @param {string} value text value
  */
 function addElement(value) {
   console.log("add->" + value);
@@ -57,7 +62,7 @@ function redraw() {
   group.innerHTML = "";
   var pasAlpha = Math.PI / elements.length;
   var rotateText = elements.length > 6 ? true : false;
-  var fontSize=40
+  var fontSize = 40;
   elements.map((element, i) => {
     var newg = document.createElementNS("http://www.w3.org/2000/svg", "g");
     var xcos = Math.cos(Math.PI / 4);
@@ -66,6 +71,7 @@ function redraw() {
     if (i > 0) {
       xcos = Math.cos(pasAlpha * i);
       ysin = Math.sin(pasAlpha * i);
+
       newg.id = "content-" + i.toString();
       var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
       line.setAttribute("x1", 0);
@@ -76,12 +82,45 @@ function redraw() {
       line.setAttribute("stroke", "black");
       newg.append(line);
     }
+    if (isElementsSeparate) {
+      if (i > 0) {
+        xcos = Math.cos(pasAlpha * i + 0.01);
+        ysin = Math.sin(pasAlpha * i + 0.01);
+
+        line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", 0);
+        line.setAttribute("y1", 0);
+        line.setAttribute("x2", xcos * 500);
+        line.setAttribute("y2", -ysin * 500);
+        line.setAttribute("stroke-width", 2);
+        line.setAttribute("stroke", "black");
+        newg.append(line);
+      }
+      if (i < elements.length - 1) {
+        //
+        xcos = Math.cos(pasAlpha * (i + 1) - 0.01);
+        ysin = Math.sin(pasAlpha * (i + 1) - 0.01);
+
+        line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", 0);
+        line.setAttribute("y1", 0);
+        line.setAttribute("x2", xcos * 500);
+        line.setAttribute("y2", -ysin * 500);
+        line.setAttribute("stroke-width", 2);
+        line.setAttribute("stroke", "black");
+        newg.append(line);
+      }
+    }
+
     xcos = Math.cos(pasAlpha * i + 0.5 * pasAlpha);
     ysin = Math.sin(pasAlpha * i + 0.5 * pasAlpha);
     var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
     text.setAttribute("text-anchor", "middle");
-    if(elements.length>10){text.setAttribute("font-size", (40-elements.length).toString());}
-    else{text.setAttribute("font-size", "40");}
+    if (elements.length > 10) {
+      text.setAttribute("font-size", (40 - elements.length).toString());
+    } else {
+      text.setAttribute("font-size", "40");
+    }
     text.innerHTML = element;
     if (rotateText) {
       text.setAttribute("x", 260);
